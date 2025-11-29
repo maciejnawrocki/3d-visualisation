@@ -110,6 +110,48 @@ const waterMat = new THREE.MeshPhysicalMaterial({
   clearcoatRoughness: 0.1
 });
 
+waterMat.onBeforeCompile = (shader) => {
+  shader.uniforms.uTime = { value: 0 };
+
+  shader.vertexShader = `
+    uniform float uTime;
+    varying vec3 vWorldPosition;
+    ${shader.vertexShader}
+  `;
+
+  shader.vertexShader = shader.vertexShader.replace(
+    '#include <begin_vertex>',
+    `
+      #include <begin_vertex>
+
+      float wave = sin((position.x + uTime * 10.0) * 0.02) * 0.4 +
+                   cos((position.y - uTime * 6.0) * 0.018) * 0.3;
+      transformed.z += wave;
+
+      // Recalculate normals for correct lighting
+      vec3 next_px = position;
+      next_px.x += 0.1;
+      float wave_px = sin((next_px.x + uTime * 10.0) * 0.02) * 0.4 +
+                      cos((next_px.y - uTime * 6.0) * 0.018) * 0.3;
+      next_px.z += wave_px;
+
+      vec3 next_py = position;
+      next_py.y += 0.1;
+      float wave_py = sin((next_py.x + uTime * 10.0) * 0.02) * 0.4 +
+                      cos((next_py.y - uTime * 6.0) * 0.018) * 0.3;
+      next_py.z += wave_py;
+
+      vec3 to_px = normalize(next_px - position);
+      vec3 to_py = normalize(next_py - position);
+      objectNormal = normalize(cross(to_py, to_px));
+
+      vWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;
+    `
+  );
+
+  waterMat.userData.shader = shader;
+};
+
 const façadeMat = new THREE.MeshStandardMaterial({
   color: 0xf6f2eb,
   roughness: 0.6
@@ -203,6 +245,7 @@ function createDriveway() {
   shape.quadraticCurveTo(90, -90, 40, -110);
   shape.quadraticCurveTo(0, -135, -60, -145);
   shape.quadraticCurveTo(-160, -155, -220, -190);
+  shape.lineTo(-220, 160); // Close the shape
   const extrudeSettings = { depth: 0.4, bevelEnabled: false };
   const drivewayGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   const driveway = new THREE.Mesh(drivewayGeo, pathMat);
@@ -850,19 +893,9 @@ function animate() {
   requestAnimationFrame(animate);
   const t = clock.getElapsedTime();
 
-  // Slight water surface animation
-  const lake = scene.getObjectByName('lake');
-  if (lake && lake.geometry && lake.geometry.attributes.position) {
-    const pos = lake.geometry.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
-      const y = pos.getY(i);
-      const wave = Math.sin((x + t * 10) * 0.02) * 0.4 +
-                   Math.cos((y - t * 6) * 0.018) * 0.3;
-      pos.setZ(i, wave);
-    }
-    pos.needsUpdate = true;
-    lake.geometry.computeVertexNormals();
+  // Update water shader time uniform
+  if (waterMat.userData.shader) {
+    waterMat.userData.shader.uniforms.uTime.value = t;
   }
 
   controls.update();
