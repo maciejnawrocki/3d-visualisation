@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leśny Dwór Sulęczyno – Wedding Scene</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      background: #000;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 13px;
+      z-index: 10;
+      border-radius: 4px;
+    }
+    a { color: #aad8ff; }
+  </style>
+</head>
+<body>
+<div id="info">
+  Leśny Dwór – Sulęczyno, Poland<br/>
+  Drag to orbit • Scroll to zoom • Right click to pan
+</div>
+<canvas id="c"></canvas>
+
+<!-- Three.js and OrbitControls from CDN -->
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// Scene & camera
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xbfd9ff);
+
+const camera = new THREE.PerspectiveCamera(
+  45,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  2000
+);
+camera.position.set(180, 120, 230);
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 15, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 80;
+controls.maxDistance = 500;
+controls.maxPolarAngle = Math.PI * 0.49;
+
+// Lights
+const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+scene.add(ambient);
+
+const sun = new THREE.DirectionalLight(0xffffff, 1.15);
+sun.position.set(-200, 250, 120);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 50;
+sun.shadow.camera.far = 800;
+sun.shadow.camera.left = -300;
+sun.shadow.camera.right = 300;
+sun.shadow.camera.top = 300;
+sun.shadow.camera.bottom = -300;
+scene.add(sun);
+
+const fill = new THREE.HemisphereLight(0xffffff, 0x337744, 0.4);
+scene.add(fill);
+
+// Materials
+const grassMat = new THREE.MeshStandardMaterial({
+  color: 0x4f7a37,
+  roughness: 0.85,
+  metalness: 0.05
+});
+
+const pathMat = new THREE.MeshStandardMaterial({
+  color: 0xd8d8d8,
+  roughness: 0.9
+});
+
+const gravelMat = new THREE.MeshStandardMaterial({
+  color: 0xc4c4c4,
+  roughness: 0.95
+});
+
+const waterMat = new THREE.MeshPhysicalMaterial({
+  color: 0x5aa1b8,
+  transparent: true,
+  opacity: 0.9,
+  roughness: 0.15,
+  metalness: 0.45,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.1
+});
+
+const façadeMat = new THREE.MeshStandardMaterial({
+  color: 0xf6f2eb,
+  roughness: 0.6
+});
+
+const accentStoneMat = new THREE.MeshStandardMaterial({
+  color: 0xb6aaa1,
+  roughness: 0.8
+});
+
+const roofMat = new THREE.MeshStandardMaterial({
+  color: 0xd45a27,
+  roughness: 0.55
+});
+
+const darkRoofMat = new THREE.MeshStandardMaterial({
+  color: 0x9d3a17,
+  roughness: 0.55
+});
+
+const windowMat = new THREE.MeshStandardMaterial({
+  color: 0xbfdcff,
+  transparent: true,
+  opacity: 0.85,
+  roughness: 0.08,
+  metalness: 0.1
+});
+
+const solarMat = new THREE.MeshStandardMaterial({
+  color: 0x1b2435,
+  roughness: 0.15,
+  metalness: 0.85
+});
+
+const treeTrunkMat = new THREE.MeshStandardMaterial({
+  color: 0x5a3b26,
+  roughness: 0.9
+});
+
+const treeLeafMat = new THREE.MeshStandardMaterial({
+  color: 0x2e6b2f,
+  roughness: 0.7
+});
+
+const hedgeMat = new THREE.MeshStandardMaterial({
+  color: 0x31572b,
+  roughness: 0.85
+});
+
+// Ground
+function createGround() {
+  // Main grass island plateau
+  const groundGeo = new THREE.PlaneGeometry(600, 400);
+  const ground = new THREE.Mesh(groundGeo, grassMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Light border to suggest shoreline transition
+  const shoreGeo = new THREE.RingGeometry(210, 260, 64);
+  const shoreMat = new THREE.MeshStandardMaterial({
+    color: 0x8ca66c,
+    side: THREE.DoubleSide,
+    roughness: 0.9
+  });
+  const shore = new THREE.Mesh(shoreGeo, shoreMat);
+  shore.rotation.x = -Math.PI / 2;
+  shore.position.set(0, 0.05, -80);
+  shore.receiveShadow = true;
+  scene.add(shore);
+
+  // Lake behind the manor (big rectangle)
+  const lakeGeo = new THREE.PlaneGeometry(800, 500, 80, 50);
+  const lake = new THREE.Mesh(lakeGeo, waterMat);
+  lake.rotation.x = -Math.PI / 2;
+  lake.position.set(0, -0.3, -330);
+  lake.receiveShadow = false;
+  lake.name = 'lake';
+  scene.add(lake);
+}
+createGround();
+
+// Curved driveway + roundabout using shapes
+function createDriveway() {
+  const shape = new THREE.Shape();
+  shape.moveTo(-220, 160);
+  shape.quadraticCurveTo(-150, 90, -60, 70);
+  shape.quadraticCurveTo(0, 60, 40, 40);
+  shape.quadraticCurveTo(90, 20, 110, 0);
+  shape.quadraticCurveTo(130, -30, 110, -60);
+  shape.quadraticCurveTo(90, -90, 40, -110);
+  shape.quadraticCurveTo(0, -135, -60, -145);
+  shape.quadraticCurveTo(-160, -155, -220, -190);
+  const extrudeSettings = { depth: 0.4, bevelEnabled: false };
+  const drivewayGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  const driveway = new THREE.Mesh(drivewayGeo, pathMat);
+  driveway.rotation.x = -Math.PI / 2;
+  driveway.position.y = 0.05;
+  driveway.receiveShadow = true;
+  scene.add(driveway);
+
+  // Circular roundabout
+  const roundGeo = new THREE.CylinderGeometry(36, 36, 0.6, 48);
+  const round = new THREE.Mesh(roundGeo, pathMat);
+  round.position.set(40, 0.4, 0);
+  round.receiveShadow = true;
+  scene.add(round);
+
+  // Small fountain / planter in centre
+  const baseGeo = new THREE.CylinderGeometry(10, 10, 1, 32);
+  const bowlGeo = new THREE.CylinderGeometry(6, 8, 1.4, 32);
+  const base = new THREE.Mesh(baseGeo, gravelMat);
+  const bowl = new THREE.Mesh(bowlGeo, façadeMat);
+  base.position.set(40, 1.1, 0);
+  bowl.position.set(40, 2.1, 0);
+  base.castShadow = true;
+  base.receiveShadow = true;
+  bowl.castShadow = true;
+  scene.add(base, bowl);
+}
+createDriveway();
+
+// Manor & buildings
+function createRoof(width, depth, height, material) {
+  const geo = new THREE.ConeGeometry(
+    Math.max(width, depth) * 0.72,
+    height,
+    4,
+    1
+  );
+  const mesh = new THREE.Mesh(geo, material);
+  mesh.rotation.y = Math.PI / 4;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+function addWindowsToFacade(group, width, height, rows, cols, zOffset) {
+  const w = width / (cols + 1);
+  const hSpacing = w;
+  const vSpacing = height / (rows + 2);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const winGeo = new THREE.PlaneGeometry(w * 0.5, vSpacing * 0.7);
+      const win = new THREE.Mesh(winGeo, windowMat);
+      win.position.set(
+        -width / 2 + (c + 1) * hSpacing,
+        4 + (r + 1) * vSpacing,
+        zOffset
+      );
+      win.castShadow = false;
+      win.receiveShadow = false;
+      group.add(win);
+
+      // Simple white frame
+      const frameGeo = new THREE.PlaneGeometry(w * 0.53, vSpacing * 0.75);
+      const frameMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 0.6
+      });
+      const frame = new THREE.Mesh(frameGeo, frameMat);
+      frame.position.copy(win.position);
+      frame.position.z += (zOffset > 0 ? 0.01 : -0.01);
+      group.add(frame);
+    }
+  }
+}
+
+function createManor() {
+  const manor = new THREE.Group();
+  manor.position.set(0, 0, 40);
+
+  // Central block (two stories)
+  const centerWidth = 80;
+  const centerDepth = 40;
+  const centerHeight = 22;
+
+  const centerGeo = new THREE.BoxGeometry(centerWidth, centerHeight, centerDepth);
+  const center = new THREE.Mesh(centerGeo, façadeMat);
+  center.position.y = centerHeight / 2;
+  center.castShadow = true;
+  center.receiveShadow = true;
+  manor.add(center);
+
+  // Stone base belt
+  const baseGeo = new THREE.BoxGeometry(centerWidth, 3, centerDepth + 0.4);
+  const base = new THREE.Mesh(baseGeo, accentStoneMat);
+  base.position.y = 1.3;
+  base.castShadow = true;
+  base.receiveShadow = true;
+  manor.add(base);
+
+  // Central front risalit (the porch + balcony volume)
+  const risWidth = 32;
+  const risDepth = 8;
+  const risHeight = 20;
+  const risGeo = new THREE.BoxGeometry(risWidth, risHeight, risDepth);
+  const ris = new THREE.Mesh(risGeo, façadeMat);
+  ris.position.set(0, risHeight / 2 + 1, centerDepth / 2 + risDepth / 2 - 1);
+  ris.castShadow = true;
+  ris.receiveShadow = true;
+  manor.add(ris);
+
+  // Triangular front gable above risalit
+  const gableShape = new THREE.Shape();
+  gableShape.moveTo(-risWidth / 2, 0);
+  gableShape.lineTo(risWidth / 2, 0);
+  gableShape.lineTo(0, 14);
+  gableShape.lineTo(-risWidth / 2, 0);
+  const gableGeo = new THREE.ExtrudeGeometry(gableShape, {
+    depth: 2,
+    bevelEnabled: false
+  });
+  const gable = new THREE.Mesh(gableGeo, façadeMat);
+  gable.rotation.y = Math.PI;
+  gable.position.set(0, 19, centerDepth / 2 + risDepth - 1);
+  gable.castShadow = true;
+  gable.receiveShadow = true;
+  manor.add(gable);
+
+  // Central main roof
+  const roof = createRoof(centerWidth + 10, centerDepth + 10, 18, roofMat);
+  roof.position.set(0, centerHeight + 11, 0);
+  manor.add(roof);
+
+  // Risalit small roof
+  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 10, roofMat);
+  smallRoof.position.set(0, 26, centerDepth / 2 + 8);
+  manor.add(smallRoof);
+
+  // Front colonnade (porch)
+  const porchDepth = 10;
+  const porchHeight = 8;
+  const porchGeo = new THREE.BoxGeometry(risWidth + 2, 1, porchDepth);
+  const porchRoof = new THREE.Mesh(porchGeo, façadeMat);
+  porchRoof.position.set(
+    0,
+    7 + 1,
+    centerDepth / 2 + risDepth + porchDepth / 2 - 1.5
+  );
+  porchRoof.castShadow = true;
+  porchRoof.receiveShadow = true;
+  manor.add(porchRoof);
+
+  // Porch floor
+  const porchFloorGeo = new THREE.BoxGeometry(risWidth + 2, 0.8, porchDepth);
+  const porchFloor = new THREE.Mesh(porchFloorGeo, gravelMat);
+  porchFloor.position.set(
+    0,
+    1.2,
+    centerDepth / 2 + risDepth + porchDepth / 2 - 1.5
+  );
+  porchFloor.receiveShadow = true;
+  manor.add(porchFloor);
+
+  // Porch columns
+  const colGeo = new THREE.CylinderGeometry(0.9, 0.9, porchHeight, 16);
+  const colMat = new THREE.MeshStandardMaterial({ color: 0xf8f6f3, roughness: 0.5 });
+  const colPositions = [-risWidth / 2 + 4, 0, risWidth / 2 - 4];
+  colPositions.forEach((x) => {
+    const col = new THREE.Mesh(colGeo, colMat);
+    col.position.set(x, porchHeight / 2 + 1.2, centerDepth / 2 + risDepth + 1.5);
+    col.castShadow = true;
+    col.receiveShadow = true;
+    manor.add(col);
+  });
+
+  // Balcony slab above porch
+  const balconyGeo = new THREE.BoxGeometry(risWidth + 2, 1, porchDepth * 0.9);
+  const balcony = new THREE.Mesh(balconyGeo, façadeMat);
+  balcony.position.set(
+    0,
+    7 + 1.1,
+    centerDepth / 2 + risDepth + porchDepth / 4
+  );
+  balcony.castShadow = true;
+  balcony.receiveShadow = true;
+  manor.add(balcony);
+
+  // Balcony balustrade
+  const balusterGeo = new THREE.CylinderGeometry(0.35, 0.35, 3.6, 10);
+  const balusterMat = new THREE.MeshStandardMaterial({
+    color: 0xf3f1ee,
+    roughness: 0.5
+  });
+  const count = 13;
+  const span = risWidth - 4;
+  for (let i = 0; i < count; i++) {
+    const t = i / (count - 1);
+    const x = -span / 2 + span * t;
+    const bal = new THREE.Mesh(balusterGeo, balusterMat);
+    bal.position.set(x, 9.3, centerDepth / 2 + risDepth + 0.3);
+    bal.castShadow = true;
+    bal.receiveShadow = true;
+    manor.add(bal);
+  }
+
+  // Balcony front rail top
+  const railGeo = new THREE.BoxGeometry(risWidth - 1, 0.5, 1);
+  const rail = new THREE.Mesh(railGeo, façadeMat);
+  rail.position.set(0, 11, centerDepth / 2 + risDepth + 0.3);
+  rail.castShadow = true;
+  manor.add(rail);
+
+  // Main entrance doorway
+  const doorGeo = new THREE.BoxGeometry(8, 6, 0.5);
+  const doorMat = new THREE.MeshStandardMaterial({ color: 0xded7cf, roughness: 0.7 });
+  const door = new THREE.Mesh(doorGeo, doorMat);
+  door.position.set(0, 4, centerDepth / 2 + risDepth + 0.26);
+  door.castShadow = true;
+  manor.add(door);
+
+  // Entrance side windows (ground level)
+  const sideWinGeo = new THREE.PlaneGeometry(4, 3);
+  for (let i = -1; i <= 1; i += 2) {
+    const sw = new THREE.Mesh(sideWinGeo, windowMat);
+    sw.position.set(i * 9, 4.3, centerDepth / 2 + risDepth + 0.27);
+    manor.add(sw);
+  }
+
+  // Windows on central block
+  addWindowsToFacade(manor, centerWidth - 10, centerHeight - 6, 2, 4, centerDepth / 2 + 0.21);
+  addWindowsToFacade(manor, centerWidth - 10, centerHeight - 6, 2, 4, -centerDepth / 2 - 0.21);
+
+  // Left and right wings
+  function createWing(sign) {
+    const wing = new THREE.Group();
+
+    const wingWidth = 80;
+    const wingDepth = 26;
+    const wingHeight = 16;
+
+    const wingGeo = new THREE.BoxGeometry(wingWidth, wingHeight, wingDepth);
+    const wingMesh = new THREE.Mesh(wingGeo, façadeMat);
+    wingMesh.position.y = wingHeight / 2;
+    wingMesh.castShadow = true;
+    wingMesh.receiveShadow = true;
+    wing.add(wingMesh);
+
+    const wingBaseGeo = new THREE.BoxGeometry(wingWidth, 2.4, wingDepth + 0.3);
+    const wingBase = new THREE.Mesh(wingBaseGeo, accentStoneMat);
+    wingBase.position.y = 1.2;
+    wingBase.castShadow = true;
+    wingBase.receiveShadow = true;
+    wing.add(wingBase);
+
+    const wingRoof = createRoof(wingWidth + 4, wingDepth + 6, 14, roofMat);
+    wingRoof.position.set(0, wingHeight + 7, 0);
+    wing.add(wingRoof);
+
+    // Wing windows (front & back)
+    addWindowsToFacade(
+      wing,
+      wingWidth - 10,
+      wingHeight - 4,
+      1,
+      5,
+      wingDepth / 2 + 0.21
+    );
+    addWindowsToFacade(
+      wing,
+      wingWidth - 10,
+      wingHeight - 4,
+      1,
+      5,
+      -wingDepth / 2 - 0.21
+    );
+
+    // Slight inner bend toward courtyard
+    wing.rotation.y = sign * (Math.PI / 24);
+    wing.position.set(sign * (centerWidth / 2 + wingWidth / 2 - 4), 0, 0);
+
+    return wing;
+  }
+
+  const leftWing = createWing(-1);
+  const rightWing = createWing(1);
+  manor.add(leftWing, rightWing);
+
+  // Small terraces at ends (approximated)
+  function createEndTerrace(sign) {
+    const tGeo = new THREE.BoxGeometry(24, 1, 12);
+    const t = new THREE.Mesh(tGeo, gravelMat);
+    t.position.set(sign * (centerWidth / 2 + 70), 1, 14);
+    t.castShadow = true;
+    t.receiveShadow = true;
+    manor.add(t);
+
+    const railGeo2 = new THREE.BoxGeometry(22, 1, 1);
+    const rail2 = new THREE.Mesh(railGeo2, façadeMat);
+    rail2.position.set(sign * (centerWidth / 2 + 70), 3, 19);
+    rail2.castShadow = true;
+    manor.add(rail2);
+  }
+  createEndTerrace(-1);
+  createEndTerrace(1);
+
+  scene.add(manor);
+}
+createManor();
+
+// Outbuilding with solar panels & parking
+function createOutbuilding() {
+  const group = new THREE.Group();
+  group.position.set(-120, 0, 80);
+
+  const bodyGeo = new THREE.BoxGeometry(60, 20, 28);
+  const body = new THREE.Mesh(bodyGeo, façadeMat);
+  body.position.y = 10;
+  body.castShadow = true;
+  body.receiveShadow = true;
+  group.add(body);
+
+  const roof = createRoof(60 + 4, 28 + 4, 16, darkRoofMat);
+  roof.position.y = 30;
+  group.add(roof);
+
+  // Solar panels on roof
+  const panelGeo = new THREE.BoxGeometry(14, 0.4, 6);
+  for (let i = -1; i <= 1; i++) {
+    const panel = new THREE.Mesh(panelGeo, solarMat);
+    panel.rotation.x = -Math.PI / 10;
+    panel.position.set(i * 18, 30.6, 10);
+    panel.castShadow = true;
+    group.add(panel);
+  }
+
+  // Ground solar arrays in front
+  const frameGeo = new THREE.BoxGeometry(26, 1, 10);
+  for (let i = 0; i < 3; i++) {
+    const frame = new THREE.Mesh(frameGeo, solarMat);
+    frame.position.set(-40 + i * 32, 2, 55);
+    frame.rotation.x = -Math.PI / 7;
+    frame.castShadow = true;
+    group.add(frame);
+  }
+
+  // Parking area
+  const parkGeo = new THREE.BoxGeometry(120, 0.4, 40);
+  const park = new THREE.Mesh(parkGeo, pathMat);
+  park.position.set(20, 0.4, 70);
+  park.receiveShadow = true;
+  group.add(park);
+
+  // Simple parked cars as small boxes
+  const carGeo = new THREE.BoxGeometry(7, 3, 4);
+  const colors = [0x444bff, 0xf44336, 0x9e9e9e, 0x4caf50, 0x000000];
+  for (let i = 0; i < 7; i++) {
+    const mat = new THREE.MeshStandardMaterial({
+      color: colors[i % colors.length],
+      roughness: 0.5,
+      metalness: 0.3
+    });
+    const car = new THREE.Mesh(carGeo, mat);
+    car.position.set(-30 + i * 14, 1.8, 80 + (i % 2 === 0 ? -5 : 5));
+    car.castShadow = true;
+    car.receiveShadow = true;
+    group.add(car);
+  }
+
+  scene.add(group);
+}
+createOutbuilding();
+
+// Trees, hedges, and lamp posts
+function createTree(x, z, heightScale = 1, autumnTint = 0) {
+  const trunkGeo = new THREE.CylinderGeometry(0.9 * heightScale, 1.3 * heightScale, 8 * heightScale, 8);
+  const trunk = new THREE.Mesh(trunkGeo, treeTrunkMat);
+  trunk.position.set(x, 4 * heightScale, z);
+  trunk.castShadow = true;
+  trunk.receiveShadow = true;
+
+  const crownGeo = new THREE.SphereGeometry(5 * heightScale, 14, 10);
+  const crownMat = treeLeafMat.clone();
+  if (autumnTint > 0) {
+    crownMat.color.offsetHSL(0.03 * autumnTint, 0.1 * autumnTint, 0.1 * autumnTint);
+  }
+  const crown = new THREE.Mesh(crownGeo, crownMat);
+  crown.position.set(x, 10 * heightScale, z);
+  crown.castShadow = true;
+  crown.receiveShadow = true;
+
+  scene.add(trunk, crown);
+}
+
+function createHedgeLine(points) {
+  const geo = new THREE.CylinderGeometry(1.3, 1.3, 3, 8);
+  for (const p of points) {
+    const h = new THREE.Mesh(geo, hedgeMat);
+    h.position.set(p.x, 1.5, p.z);
+    h.castShadow = true;
+    h.receiveShadow = true;
+    scene.add(h);
+  }
+}
+
+function createLampPost(x, z) {
+  const poleGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8);
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.6 });
+  const pole = new THREE.Mesh(poleGeo, poleMat);
+  pole.position.set(x, 2.5, z);
+  pole.castShadow = true;
+  pole.receiveShadow = true;
+
+  const headGeo = new THREE.SphereGeometry(0.6, 8, 8);
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xfff7d6, emissive: 0xfff3c4, emissiveIntensity: 0.7 });
+  const head = new THREE.Mesh(headGeo, headMat);
+  head.position.set(x, 5.4, z);
+  head.castShadow = true;
+
+  scene.add(pole, head);
+}
+
+function populateLandscape() {
+  // Tree rows along lake shore
+  for (let i = -160; i <= 160; i += 30) {
+    createTree(i, -140 + (Math.random() * 20 - 10), 1.1 + Math.random() * 0.4, Math.random());
+  }
+
+  // Trees to right side forest
+  for (let i = 0; i < 30; i++) {
+    const x = 120 + Math.random() * 120;
+    const z = -40 + Math.random() * 260 - 130;
+    createTree(x, z, 1.2 + Math.random() * 0.7, 0.3);
+  }
+
+  // Courtyard hedges following driveway
+  const hedgePts = [];
+  for (let i = 0; i < 15; i++) {
+    hedgePts.push({ x: 5 + i * 4, z: -40 - i * 3.4 });
+  }
+  createHedgeLine(hedgePts);
+
+  // Short hedge ring around roundabout
+  const ringPts = [];
+  const r = 48;
+  for (let a = 0; a < Math.PI * 2; a += Math.PI / 10) {
+    ringPts.push({ x: 40 + Math.cos(a) * r, z: 0 + Math.sin(a) * r });
+  }
+  createHedgeLine(ringPts);
+
+  // Lamp posts along lake path behind the manor
+  for (let i = -4; i <= 4; i++) {
+    createLampPost(i * 26, -40);
+  }
+}
+populateLandscape();
+
+// Bride and groom
+function createPerson(options) {
+  const group = new THREE.Group();
+  const {
+    height = 10,
+    bodyColor = 0x000000,
+    accentColor = 0xffffff,
+    hairColor = 0x000000,
+    isBride = false
+  } = options;
+
+  const scale = height / 10;
+
+  // Torso
+  const torsoGeo = new THREE.CylinderGeometry(
+    isBride ? 1.6 * scale : 1.4 * scale,
+    isBride ? 2.2 * scale : 1.6 * scale,
+    4.5 * scale,
+    16
+  );
+  const torsoMat = new THREE.MeshStandardMaterial({
+    color: bodyColor,
+    roughness: 0.6,
+    metalness: 0.1
+  });
+  const torso = new THREE.Mesh(torsoGeo, torsoMat);
+  torso.position.y = 4.5 * scale;
+  torso.castShadow = true;
+  torso.receiveShadow = true;
+  group.add(torso);
+
+  // Legs (only visible for groom)
+  if (!isBride) {
+    const legGeo = new THREE.CylinderGeometry(0.5 * scale, 0.5 * scale, 4 * scale, 10);
+    const legMat = new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.7 });
+    const leftLeg = new THREE.Mesh(legGeo, legMat);
+    const rightLeg = new THREE.Mesh(legGeo, legMat);
+    leftLeg.position.set(-0.7 * scale, 2 * scale, 0);
+    rightLeg.position.set(0.7 * scale, 2 * scale, 0);
+    leftLeg.castShadow = rightLeg.castShadow = true;
+    leftLeg.receiveShadow = rightLeg.receiveShadow = true;
+    group.add(leftLeg, rightLeg);
+  } else {
+    // Wedding dress: long cone
+    const dressGeo = new THREE.CylinderGeometry(0.7 * scale, 2.6 * scale, 5 * scale, 24);
+    const dressMat = new THREE.MeshStandardMaterial({
+      color: 0xfdfdfd,
+      roughness: 0.7,
+      metalness: 0.05
+    });
+    const dress = new THREE.Mesh(dressGeo, dressMat);
+    dress.position.y = 3.1 * scale;
+    dress.castShadow = true;
+    dress.receiveShadow = true;
+    group.add(dress);
+  }
+
+  // Neck
+  const neckGeo = new THREE.CylinderGeometry(0.5 * scale, 0.5 * scale, 0.8 * scale, 10);
+  const skinMat = new THREE.MeshStandardMaterial({
+    color: 0xffdab5,
+    roughness: 0.6
+  });
+  const neck = new THREE.Mesh(neckGeo, skinMat);
+  neck.position.y = 7 * scale;
+  neck.castShadow = true;
+  group.add(neck);
+
+  // Head
+  const headGeo = new THREE.SphereGeometry(1.3 * scale, 16, 16);
+  const head = new THREE.Mesh(headGeo, skinMat);
+  head.position.y = 8.7 * scale;
+  head.castShadow = true;
+  head.receiveShadow = true;
+  group.add(head);
+
+  // Hair
+  const hairGeo = new THREE.SphereGeometry(1.35 * scale, 16, 16, 0, Math.PI * 2, 0, Math.PI);
+  const hairMat = new THREE.MeshStandardMaterial({
+    color: hairColor,
+    roughness: 0.6
+  });
+  const hair = new THREE.Mesh(hairGeo, hairMat);
+  hair.position.y = 9 * scale;
+  hair.castShadow = true;
+  group.add(hair);
+
+  // Arms
+  const armGeo = new THREE.CylinderGeometry(0.35 * scale, 0.35 * scale, 3.6 * scale, 10);
+  const sleeveMat = new THREE.MeshStandardMaterial({
+    color: bodyColor,
+    roughness: 0.6
+  });
+  const leftArm = new THREE.Mesh(armGeo, sleeveMat);
+  const rightArm = new THREE.Mesh(armGeo, sleeveMat);
+  leftArm.position.set(-1.8 * scale, 5.8 * scale, 0.4 * scale);
+  rightArm.position.set(1.8 * scale, 5.8 * scale, 0.4 * scale);
+  leftArm.rotation.z = Math.PI / 10;
+  rightArm.rotation.z = -Math.PI / 10;
+  leftArm.castShadow = rightArm.castShadow = true;
+  leftArm.receiveShadow = rightArm.receiveShadow = true;
+  group.add(leftArm, rightArm);
+
+  // Hands
+  const handGeo = new THREE.SphereGeometry(0.45 * scale, 10, 10);
+  const lHand = new THREE.Mesh(handGeo, skinMat);
+  const rHand = new THREE.Mesh(handGeo, skinMat);
+  lHand.position.copy(leftArm.position).add(new THREE.Vector3(0, -2.2 * scale, 0));
+  rHand.position.copy(rightArm.position).add(new THREE.Vector3(0, -2.2 * scale, 0));
+  lHand.castShadow = rHand.castShadow = true;
+  group.add(lHand, rHand);
+
+  // Details
+  if (!isBride) {
+    // Bow tie
+    const bowGeo = new THREE.BoxGeometry(0.4 * scale, 0.2 * scale, 0.8 * scale);
+    const bowMat = new THREE.MeshStandardMaterial({ color: accentColor, roughness: 0.5 });
+    const bow = new THREE.Mesh(bowGeo, bowMat);
+    bow.position.set(0, 7.8 * scale, 1.3 * scale);
+    bow.castShadow = true;
+    group.add(bow);
+
+    // Shirt stripe
+    const stripeGeo = new THREE.BoxGeometry(0.4 * scale, 2.5 * scale, 0.1 * scale);
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+    const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+    stripe.position.set(0, 6.5 * scale, 1.35 * scale);
+    group.add(stripe);
+  } else {
+    // Veil as transparent plane
+    const veilGeo = new THREE.PlaneGeometry(4.5 * scale, 6 * scale);
+    const veilMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide
+    });
+    const veil = new THREE.Mesh(veilGeo, veilMat);
+    veil.position.set(0, 8.5 * scale, -1.1 * scale);
+    veil.rotation.x = -0.3;
+    veil.castShadow = false;
+    group.add(veil);
+
+    // Bouquet
+    const bouquetGeo = new THREE.SphereGeometry(0.9 * scale, 10, 10);
+    const bouquetMat = new THREE.MeshStandardMaterial({
+      color: 0xff6f91,
+      roughness: 0.7
+    });
+    const bouquet = new THREE.Mesh(bouquetGeo, bouquetMat);
+    bouquet.position.set(0.5 * scale, 4.6 * scale, 1.6 * scale);
+    bouquet.castShadow = true;
+    group.add(bouquet);
+  }
+
+  return group;
+}
+
+function placeCouple() {
+  const groom = createPerson({
+    height: 11.5,
+    bodyColor: 0x111111,
+    accentColor: 0xb4001a,
+    hairColor: 0x2d1b14,
+    isBride: false
+  });
+  const bride = createPerson({
+    height: 9.5,
+    bodyColor: 0xffffff,
+    accentColor: 0xffffff,
+    hairColor: 0xf6d585,
+    isBride: true
+  });
+
+  // Position them on the axis of the entrance, slightly in front of the fountain
+  groom.position.set(35, 0, 28);
+  bride.position.set(46, 0, 26);
+
+  groom.rotation.y = Math.PI * 0.05;
+  bride.rotation.y = -Math.PI * 0.05;
+
+  scene.add(groom, bride);
+}
+placeCouple();
+
+// Animation loop (including small lake waves)
+let clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  // Slight water surface animation
+  const lake = scene.getObjectByName('lake');
+  if (lake && lake.geometry && lake.geometry.attributes.position) {
+    const pos = lake.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const wave = Math.sin((x + t * 10) * 0.02) * 0.4 +
+                   Math.cos((y - t * 6) * 0.018) * 0.3;
+      pos.setZ(i, wave);
+    }
+    pos.needsUpdate = true;
+    lake.geometry.computeVertexNormals();
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize handling
+window.addEventListener('resize', () => {
+  const { innerWidth, innerHeight } = window;
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
