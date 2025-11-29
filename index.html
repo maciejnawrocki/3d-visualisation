@@ -115,7 +115,6 @@ waterMat.onBeforeCompile = (shader) => {
 
   shader.vertexShader = `
     uniform float uTime;
-    varying vec3 vWorldPosition;
     ${shader.vertexShader}
   `;
 
@@ -128,24 +127,21 @@ waterMat.onBeforeCompile = (shader) => {
                    cos((position.y - uTime * 6.0) * 0.018) * 0.3;
       transformed.z += wave;
 
-      // Recalculate normals for correct lighting
-      vec3 next_px = position;
-      next_px.x += 0.1;
-      float wave_px = sin((next_px.x + uTime * 10.0) * 0.02) * 0.4 +
-                      cos((next_px.y - uTime * 6.0) * 0.018) * 0.3;
-      next_px.z += wave_px;
+      // Recalculate normals for correct lighting (analytical derivatives)
+      float dz_dx = 0.02 * 0.4 * cos((position.x + uTime * 10.0) * 0.02);
+      float dz_dy = -0.018 * 0.3 * sin((position.y - uTime * 6.0) * 0.018);
+      objectNormal = normalize(vec3(-dz_dx, -dz_dy, 1.0));
+    `
+  );
 
-      vec3 next_py = position;
-      next_py.y += 0.1;
-      float wave_py = sin((next_py.x + uTime * 10.0) * 0.02) * 0.4 +
-                      cos((next_py.y - uTime * 6.0) * 0.018) * 0.3;
-      next_py.z += wave_py;
-
-      vec3 to_px = normalize(next_px - position);
-      vec3 to_py = normalize(next_py - position);
-      objectNormal = normalize(cross(to_py, to_px));
-
-      vWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  shader.fragmentShader = `
+    varying vec3 vWorldPosition;
+    ${shader.fragmentShader}
+  `.replace(
+    '#include <normal_fragment_begin>',
+    `
+      #include <normal_fragment_begin>
+      normal = normalize(vNormal); // Use interpolated normal
     `
   );
 
