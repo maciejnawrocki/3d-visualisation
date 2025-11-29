@@ -31,10 +31,19 @@
 </div>
 <canvas id="c"></canvas>
 
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/examples/jsm/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
 <!-- Three.js and OrbitControls from CDN -->
 <script type="module">
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -65,22 +74,23 @@ controls.maxDistance = 500;
 controls.maxPolarAngle = Math.PI * 0.49;
 
 // Lights
-const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+const ambient = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambient);
 
-const sun = new THREE.DirectionalLight(0xffffff, 1.15);
+const sun = new THREE.DirectionalLight(0xffffff, 1.5);
 sun.position.set(-200, 250, 120);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.camera.near = 50;
 sun.shadow.camera.far = 800;
-sun.shadow.camera.left = -300;
-sun.shadow.camera.right = 300;
-sun.shadow.camera.top = 300;
-sun.shadow.camera.bottom = -300;
+sun.shadow.camera.left = -250;
+sun.shadow.camera.right = 250;
+sun.shadow.camera.top = 250;
+sun.shadow.camera.bottom = -250;
+sun.shadow.bias = -0.001;
 scene.add(sun);
 
-const fill = new THREE.HemisphereLight(0xffffff, 0x337744, 0.4);
+const fill = new THREE.HemisphereLight(0xffffff, 0x337744, 0.2);
 scene.add(fill);
 
 // Materials
@@ -154,17 +164,17 @@ waterMat.onBeforeCompile = (shader) => {
 
 const façadeMat = new THREE.MeshStandardMaterial({
   color: 0xf6f2eb,
-  roughness: 0.6
+  roughness: 0.9
 });
 
 const accentStoneMat = new THREE.MeshStandardMaterial({
   color: 0xb6aaa1,
-  roughness: 0.8
+  roughness: 0.95
 });
 
 const roofMat = new THREE.MeshStandardMaterial({
   color: 0xd45a27,
-  roughness: 0.55
+  roughness: 0.8
 });
 
 const darkRoofMat = new THREE.MeshStandardMaterial({
