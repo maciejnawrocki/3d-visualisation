@@ -54,7 +54,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Scene & camera
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xbfd9ff);
+scene.background = new THREE.Color(0xd4e4f4);
 
 const camera = new THREE.PerspectiveCamera(
   45,
@@ -62,23 +62,23 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2000
 );
-camera.position.set(180, 120, 230);
+camera.position.set(10, 60, 250);
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 15, 0);
+controls.target.set(0, 20, 0);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.minDistance = 80;
-controls.maxDistance = 500;
-controls.maxPolarAngle = Math.PI * 0.49;
+controls.minDistance = 50;
+controls.maxDistance = 300;
+controls.maxPolarAngle = Math.PI * 0.45;
 
 // Lights
-const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+const ambient = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambient);
 
-const sun = new THREE.DirectionalLight(0xffffff, 1.5);
-sun.position.set(-200, 250, 120);
+const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+sun.position.set(50, 100, 200);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.camera.near = 50;
@@ -90,23 +90,23 @@ sun.shadow.camera.bottom = -250;
 sun.shadow.bias = -0.001;
 scene.add(sun);
 
-const fill = new THREE.HemisphereLight(0xffffff, 0x337744, 0.2);
+const fill = new THREE.HemisphereLight(0xddeeff, 0x889988, 0.4);
 scene.add(fill);
 
 // Materials
 const grassMat = new THREE.MeshStandardMaterial({
-  color: 0x4f7a37,
+  color: 0x78946a,
   roughness: 0.85,
   metalness: 0.05
 });
 
 const pathMat = new THREE.MeshStandardMaterial({
-  color: 0xd8d8d8,
+  color: 0xced4da,
   roughness: 0.9
 });
 
 const gravelMat = new THREE.MeshStandardMaterial({
-  color: 0xc4c4c4,
+  color: 0xb0b4b8,
   roughness: 0.95
 });
 
@@ -163,17 +163,17 @@ waterMat.onBeforeCompile = (shader) => {
 };
 
 const façadeMat = new THREE.MeshStandardMaterial({
-  color: 0xf6f2eb,
+  color: 0xf8f4e9,
   roughness: 0.9
 });
 
 const accentStoneMat = new THREE.MeshStandardMaterial({
-  color: 0xb6aaa1,
+  color: 0xd1c8bd,
   roughness: 0.95
 });
 
 const roofMat = new THREE.MeshStandardMaterial({
-  color: 0xd45a27,
+  color: 0xcf6a47,
   roughness: 0.8
 });
 
@@ -183,11 +183,11 @@ const darkRoofMat = new THREE.MeshStandardMaterial({
 });
 
 const windowMat = new THREE.MeshStandardMaterial({
-  color: 0xbfdcff,
+  color: 0x6c757d,
   transparent: true,
-  opacity: 0.85,
-  roughness: 0.08,
-  metalness: 0.1
+  opacity: 0.7,
+  roughness: 0.1,
+  metalness: 0.2
 });
 
 const solarMat = new THREE.MeshStandardMaterial({
@@ -233,62 +233,46 @@ function createGround() {
   shore.receiveShadow = true;
   scene.add(shore);
 
-  // Lake behind the manor (big rectangle)
-  const lakeGeo = new THREE.PlaneGeometry(800, 500, 80, 50);
-  const lake = new THREE.Mesh(lakeGeo, waterMat);
-  lake.rotation.x = -Math.PI / 2;
-  lake.position.set(0, -0.3, -330);
-  lake.receiveShadow = false;
-  lake.name = 'lake';
-  scene.add(lake);
 }
 createGround();
 
-// Curved driveway + roundabout using shapes
 function createDriveway() {
   const shape = new THREE.Shape();
-  shape.moveTo(-220, 160);
-  shape.quadraticCurveTo(-150, 90, -60, 70);
-  shape.quadraticCurveTo(0, 60, 40, 40);
-  shape.quadraticCurveTo(90, 20, 110, 0);
-  shape.quadraticCurveTo(130, -30, 110, -60);
-  shape.quadraticCurveTo(90, -90, 40, -110);
-  shape.quadraticCurveTo(0, -135, -60, -145);
-  shape.quadraticCurveTo(-160, -155, -220, -190);
-  shape.lineTo(-220, 160); // Close the shape
+  shape.moveTo(-150, 120);
+  shape.quadraticCurveTo(-100, 80, -50, 60);
+  shape.quadraticCurveTo(0, 50, 50, 60);
+  shape.quadraticCurveTo(100, 80, 150, 120);
+  shape.lineTo(150, 100);
+  shape.quadraticCurveTo(100, 60, 50, 40);
+  shape.quadraticCurveTo(0, 30, -50, 40);
+  shape.quadraticCurveTo(-100, 60, -150, 100);
+  shape.lineTo(-150, 120);
+
   const extrudeSettings = { depth: 0.4, bevelEnabled: false };
   const drivewayGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   const driveway = new THREE.Mesh(drivewayGeo, pathMat);
   driveway.rotation.x = -Math.PI / 2;
-  driveway.position.y = 0.05;
+  driveway.position.y = 0.1;
   driveway.receiveShadow = true;
   scene.add(driveway);
 
-  // Circular roundabout
-  const roundGeo = new THREE.CylinderGeometry(36, 36, 0.6, 48);
-  const round = new THREE.Mesh(roundGeo, pathMat);
-  round.position.set(40, 0.4, 0);
-  round.receiveShadow = true;
-  scene.add(round);
-
-  // Small fountain / planter in centre
-  const baseGeo = new THREE.CylinderGeometry(10, 10, 1, 32);
-  const bowlGeo = new THREE.CylinderGeometry(6, 8, 1.4, 32);
-  const base = new THREE.Mesh(baseGeo, gravelMat);
-  const bowl = new THREE.Mesh(bowlGeo, façadeMat);
-  base.position.set(40, 1.1, 0);
-  bowl.position.set(40, 2.1, 0);
-  base.castShadow = true;
-  base.receiveShadow = true;
-  bowl.castShadow = true;
-  scene.add(base, bowl);
+  const centerIsland = new THREE.Shape();
+  centerIsland.moveTo(-40, 50);
+  centerIsland.quadraticCurveTo(0, 40, 40, 50);
+  centerIsland.quadraticCurveTo(0, 60, -40, 50);
+  const islandGeo = new THREE.ShapeGeometry(centerIsland);
+  const island = new THREE.Mesh(islandGeo, grassMat);
+  island.rotation.x = -Math.PI / 2;
+  island.position.y = 0.2;
+  island.receiveShadow = true;
+  scene.add(island);
 }
 createDriveway();
 
 // Manor & buildings
 function createRoof(width, depth, height, material) {
   const geo = new THREE.ConeGeometry(
-    Math.max(width, depth) * 0.72,
+    Math.max(width, depth) * 0.6,
     height,
     4,
     1
@@ -321,8 +305,8 @@ function addWindowsToFacade(group, width, height, rows, cols, zOffset) {
       // Simple white frame
       const frameGeo = new THREE.PlaneGeometry(w * 0.53, vSpacing * 0.75);
       const frameMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.6
+        color: 0xe9ecef,
+        roughness: 0.7
       });
       const frame = new THREE.Mesh(frameGeo, frameMat);
       frame.position.copy(win.position);
@@ -385,88 +369,45 @@ function createManor() {
   manor.add(gable);
 
   // Central main roof
-  const roof = createRoof(centerWidth + 10, centerDepth + 10, 18, roofMat);
-  roof.position.set(0, centerHeight + 11, 0);
+  const roof = createRoof(centerWidth + 10, centerDepth + 10, 15, roofMat);
+  roof.position.set(0, centerHeight + 7, 0);
   manor.add(roof);
 
   // Risalit small roof
-  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 10, roofMat);
-  smallRoof.position.set(0, 26, centerDepth / 2 + 8);
+  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 8, roofMat);
+  smallRoof.position.set(0, 24, centerDepth / 2 + 8);
   manor.add(smallRoof);
 
   // Front colonnade (porch)
-  const porchDepth = 10;
-  const porchHeight = 8;
-  const porchGeo = new THREE.BoxGeometry(risWidth + 2, 1, porchDepth);
-  const porchRoof = new THREE.Mesh(porchGeo, façadeMat);
-  porchRoof.position.set(
-    0,
-    7 + 1,
-    centerDepth / 2 + risDepth + porchDepth / 2 - 1.5
-  );
+  const porchDepth = 8;
+  const porchHeight = 9;
+  const porchRoofGeo = new THREE.BoxGeometry(risWidth, 1.5, porchDepth);
+  const porchRoof = new THREE.Mesh(porchRoofGeo, façadeMat);
+  porchRoof.position.set(0, porchHeight + 1.5, centerDepth / 2 + risDepth / 2 + porchDepth / 2);
   porchRoof.castShadow = true;
-  porchRoof.receiveShadow = true;
   manor.add(porchRoof);
 
-  // Porch floor
-  const porchFloorGeo = new THREE.BoxGeometry(risWidth + 2, 0.8, porchDepth);
+  const porchFloorGeo = new THREE.BoxGeometry(risWidth, 0.5, porchDepth);
   const porchFloor = new THREE.Mesh(porchFloorGeo, gravelMat);
-  porchFloor.position.set(
-    0,
-    1.2,
-    centerDepth / 2 + risDepth + porchDepth / 2 - 1.5
-  );
+  porchFloor.position.set(0, 0.25, centerDepth / 2 + risDepth / 2 + porchDepth / 2);
   porchFloor.receiveShadow = true;
   manor.add(porchFloor);
 
-  // Porch columns
-  const colGeo = new THREE.CylinderGeometry(0.9, 0.9, porchHeight, 16);
-  const colMat = new THREE.MeshStandardMaterial({ color: 0xf8f6f3, roughness: 0.5 });
-  const colPositions = [-risWidth / 2 + 4, 0, risWidth / 2 - 4];
-  colPositions.forEach((x) => {
-    const col = new THREE.Mesh(colGeo, colMat);
-    col.position.set(x, porchHeight / 2 + 1.2, centerDepth / 2 + risDepth + 1.5);
-    col.castShadow = true;
-    col.receiveShadow = true;
-    manor.add(col);
+  const colGeo = new THREE.CylinderGeometry(1.2, 1.2, porchHeight, 16);
+  const colMat = new THREE.MeshStandardMaterial({ color: 0xfdfbf5, roughness: 0.5 });
+  const colPositions = [-risWidth / 2 + 6, risWidth / 2 - 6];
+  colPositions.forEach(x => {
+      const col = new THREE.Mesh(colGeo, colMat);
+      col.position.set(x, porchHeight / 2 + 0.5, centerDepth / 2 + risDepth / 2 + porchDepth / 2);
+      col.castShadow = true;
+      manor.add(col);
   });
 
-  // Balcony slab above porch
-  const balconyGeo = new THREE.BoxGeometry(risWidth + 2, 1, porchDepth * 0.9);
-  const balcony = new THREE.Mesh(balconyGeo, façadeMat);
-  balcony.position.set(
-    0,
-    7 + 1.1,
-    centerDepth / 2 + risDepth + porchDepth / 4
-  );
-  balcony.castShadow = true;
-  balcony.receiveShadow = true;
-  manor.add(balcony);
-
-  // Balcony balustrade
-  const balusterGeo = new THREE.CylinderGeometry(0.35, 0.35, 3.6, 10);
-  const balusterMat = new THREE.MeshStandardMaterial({
-    color: 0xf3f1ee,
-    roughness: 0.5
-  });
-  const count = 13;
-  const span = risWidth - 4;
-  for (let i = 0; i < count; i++) {
-    const t = i / (count - 1);
-    const x = -span / 2 + span * t;
-    const bal = new THREE.Mesh(balusterGeo, balusterMat);
-    bal.position.set(x, 9.3, centerDepth / 2 + risDepth + 0.3);
-    bal.castShadow = true;
-    bal.receiveShadow = true;
-    manor.add(bal);
-  }
-
-  // Balcony front rail top
-  const railGeo = new THREE.BoxGeometry(risWidth - 1, 0.5, 1);
-  const rail = new THREE.Mesh(railGeo, façadeMat);
-  rail.position.set(0, 11, centerDepth / 2 + risDepth + 0.3);
-  rail.castShadow = true;
-  manor.add(rail);
+  const balconyRailGeo = new THREE.BoxGeometry(risWidth - 2, 1.5, 0.5);
+  const balconyRail = new THREE.Mesh(balconyRailGeo, façadeMat);
+  balconyRail.position.set(0, porchHeight + 2.5, centerDepth / 2 + risDepth / 2 + porchDepth);
+  balconyRail.castShadow = true;
+  manor.add(balconyRail);
 
   // Main entrance doorway
   const doorGeo = new THREE.BoxGeometry(8, 6, 0.5);
@@ -510,8 +451,8 @@ function createManor() {
     wingBase.receiveShadow = true;
     wing.add(wingBase);
 
-    const wingRoof = createRoof(wingWidth + 4, wingDepth + 6, 14, roofMat);
-    wingRoof.position.set(0, wingHeight + 7, 0);
+    const wingRoof = createRoof(wingWidth + 4, wingDepth + 6, 12, roofMat);
+    wingRoof.position.set(0, wingHeight + 5, 0);
     wing.add(wingRoof);
 
     // Wing windows (front & back)
@@ -626,31 +567,62 @@ function createOutbuilding() {
 
   scene.add(group);
 }
-createOutbuilding();
 
 // Trees, hedges, and lamp posts
-function createTree(x, z, heightScale = 1, autumnTint = 0) {
-  const trunkGeo = new THREE.CylinderGeometry(0.9 * heightScale, 1.3 * heightScale, 8 * heightScale, 8);
-  const trunk = new THREE.Mesh(trunkGeo, treeTrunkMat);
-  trunk.position.set(x, 4 * heightScale, z);
+function createRealisticTree(x, z, options = {}) {
+  const {
+    height = 20,
+    crownRadius = 6,
+    trunkRadius = 0.8,
+    color = 0x446622,
+  } = options;
+
+  const group = new THREE.Group();
+  group.position.set(x, 0, z);
+
+  const trunkHeight = height * 0.4;
+  const trunkGeo = new THREE.CylinderGeometry(
+    trunkRadius * 0.7,
+    trunkRadius,
+    trunkHeight,
+    12
+  );
+  const trunkMat = new THREE.MeshStandardMaterial({
+    color: 0x624a2e,
+    roughness: 0.9,
+  });
+  const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+  trunk.position.y = trunkHeight / 2;
   trunk.castShadow = true;
-  trunk.receiveShadow = true;
+  group.add(trunk);
 
-  const crownGeo = new THREE.SphereGeometry(5 * heightScale, 14, 10);
-  const crownMat = treeLeafMat.clone();
-  if (autumnTint > 0) {
-    crownMat.color.offsetHSL(0.03 * autumnTint, 0.1 * autumnTint, 0.1 * autumnTint);
+  const crownHeight = height * 0.6;
+  const numSpheres = 8;
+  const crownMat = new THREE.MeshStandardMaterial({
+    color: color,
+    roughness: 0.8,
+  });
+
+  for (let i = 0; i < numSpheres; i++) {
+    const sphereRadius = crownRadius * (0.6 + Math.random() * 0.4);
+    const sphereGeo = new THREE.SphereGeometry(sphereRadius, 8, 6);
+    const sphere = new THREE.Mesh(sphereGeo, crownMat);
+
+    sphere.position.set(
+      (Math.random() - 0.5) * crownRadius * 0.8,
+      trunkHeight + (Math.random() - 0.2) * crownHeight * 0.8,
+      (Math.random() - 0.5) * crownRadius * 0.8
+    );
+    sphere.castShadow = true;
+    group.add(sphere);
   }
-  const crown = new THREE.Mesh(crownGeo, crownMat);
-  crown.position.set(x, 10 * heightScale, z);
-  crown.castShadow = true;
-  crown.receiveShadow = true;
 
-  scene.add(trunk, crown);
+  scene.add(group);
+  return group;
 }
 
-function createHedgeLine(points) {
-  const geo = new THREE.CylinderGeometry(1.3, 1.3, 3, 8);
+function createHedgeLine(points, geometry) {
+  const geo = geometry || new THREE.CylinderGeometry(1.3, 1.3, 3, 8);
   for (const p of points) {
     const h = new THREE.Mesh(geo, hedgeMat);
     h.position.set(p.x, 1.5, p.z);
@@ -678,37 +650,31 @@ function createLampPost(x, z) {
 }
 
 function populateLandscape() {
-  // Tree rows along lake shore
-  for (let i = -160; i <= 160; i += 30) {
-    createTree(i, -140 + (Math.random() * 20 - 10), 1.1 + Math.random() * 0.4, Math.random());
-  }
+  createRealisticTree(-140, 0, { height: 35, crownRadius: 12, color: 0x3a592a });
+  createRealisticTree(130, -20, { height: 32, crownRadius: 11, color: 0x41662f });
+  createRealisticTree(-100, -80, { height: 38, crownRadius: 14, color: 0x334d22 });
 
-  // Trees to right side forest
-  for (let i = 0; i < 30; i++) {
-    const x = 120 + Math.random() * 120;
-    const z = -40 + Math.random() * 260 - 130;
-    createTree(x, z, 1.2 + Math.random() * 0.7, 0.3);
-  }
+  const hedgeGeo = new THREE.BoxGeometry(2.5, 3.5, 2.5);
+  const points = [
+      // Right side hedges from camera view
+      { x: 80, z: 80 }, { x: 84, z: 80 }, { x: 88, z: 80 },
+      { x: 92, z: 80 }, { x: 96, z: 80 }, { x: 100, z: 80 },
+      // Left side hedges from camera view
+      { x: -70, z: 90 }, { x: -74, z: 90 }, { x: -78, z: 90 },
+      { x: -82, z: 90 }, { x: -86, z: 90 }, { x: -90, z: 90 },
+  ];
+  createHedgeLine(points, hedgeGeo);
 
-  // Courtyard hedges following driveway
-  const hedgePts = [];
-  for (let i = 0; i < 15; i++) {
-    hedgePts.push({ x: 5 + i * 4, z: -40 - i * 3.4 });
+  function createTopiary(x, z) {
+      const baseGeo = new THREE.ConeGeometry(2, 4, 8);
+      const base = new THREE.Mesh(baseGeo, hedgeMat);
+      base.position.set(x, 2, z);
+      base.castShadow = true;
+      scene.add(base);
   }
-  createHedgeLine(hedgePts);
-
-  // Short hedge ring around roundabout
-  const ringPts = [];
-  const r = 48;
-  for (let a = 0; a < Math.PI * 2; a += Math.PI / 10) {
-    ringPts.push({ x: 40 + Math.cos(a) * r, z: 0 + Math.sin(a) * r });
-  }
-  createHedgeLine(ringPts);
-
-  // Lamp posts along lake path behind the manor
-  for (let i = -4; i <= 4; i++) {
-    createLampPost(i * 26, -40);
-  }
+  createTopiary(70, 70);
+  createTopiary(-60, 80);
+  createTopiary(110, 50);
 }
 populateLandscape();
 
@@ -895,7 +861,6 @@ function placeCouple() {
 
   scene.add(groom, bride);
 }
-placeCouple();
 
 // Animation loop (including small lake waves)
 let clock = new THREE.Clock();
