@@ -175,7 +175,7 @@ export function placeCouple(scene) {
 
   // Position them on the axis of the entrance, slightly in front of the fountain
   groom.position.set(-5, 0, 28);
-  bride.position.set(5, 0, 26);
+  bride.position.set(5, 0, 28);
 
   groom.rotation.y = Math.PI * 0.05
   bride.rotation.y = -Math.PI * 0.05;

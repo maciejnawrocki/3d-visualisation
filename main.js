@@ -26,7 +26,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2000
 );
-camera.position.set(10, 60, 250);
+// camera.position.set(10, 60, 250); // camera in front of couple
+camera.position.set(0, 600, 0); // camera from the top
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -34,7 +35,7 @@ controls.target.set(0, 20, 0);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.minDistance = 50;
-controls.maxDistance = 300;
+controls.maxDistance = 800;
 controls.maxPolarAngle = Math.PI * 0.45;
 
 // Lights
