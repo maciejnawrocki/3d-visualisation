@@ -652,17 +652,19 @@ function createLampPost(x, z) {
 
 function populateLandscape() {
   createRealisticTree(-140, 0, { height: 35, crownRadius: 12, color: 0x3a592a });
-  createRealisticTree(130, -20, { height: 32, crownRadius: 11, color: 0x41662f });
-  createRealisticTree(-100, -80, { height: 38, crownRadius: 14, color: 0x334d22 });
+  createRealisticTree(160, -20, { height: 32, crownRadius: 11, color: 0x41662f });
+  createRealisticTree(150, -80, { height: 38, crownRadius: 12, color: 0x334d22 });
+  createRealisticTree(-80, -90, { height: 42, crownRadius: 13, color: 0x334d22 });
+  createRealisticTree(-120, -30, { height: 36, crownRadius: 11, color: 0x334d22 });
 
   const hedgeGeo = new THREE.BoxGeometry(2.5, 3.5, 2.5);
   const points = [
       // Right side hedges from camera view
-      { x: 80, z: 80 }, { x: 84, z: 80 }, { x: 88, z: 80 },
-      { x: 92, z: 80 }, { x: 96, z: 80 }, { x: 100, z: 80 },
+      { x: 30, z: 40 }, { x: 34, z: 40 }, { x: 38, z: 40 },
+      { x: 42, z: 40 }, { x: 46, z: 40 }, { x: 50, z: 40 },
       // Left side hedges from camera view
-      { x: -70, z: 90 }, { x: -74, z: 90 }, { x: -78, z: 90 },
-      { x: -82, z: 90 }, { x: -86, z: 90 }, { x: -90, z: 90 },
+      { x: -30, z: 40 }, { x: -34, z: 40 }, { x: -38, z: 40 },
+      { x: -42, z: 40 }, { x: -46, z: 40 }, { x: -50, z: 40 },
   ];
   createHedgeLine(points, hedgeGeo);
 
