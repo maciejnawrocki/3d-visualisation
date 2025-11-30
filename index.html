@@ -253,7 +253,7 @@ function createDriveway() {
     const pathGeo = new THREE.BoxGeometry(10, 0.4, 30);
     const path = new THREE.Mesh(pathGeo, pathMat);
     path.position.set(-1.4, 0.1, 15);
-    path.rotation.fromEuler(new THREE.Euler(0, -0.32, 0));
+    path.rotation.set( new THREE.Euler(0, -0.32, 0) );
     path.receiveShadow = true;
     scene.add(path);
 }
