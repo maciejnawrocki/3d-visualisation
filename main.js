@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { createGround } from './modules/ground.js';
+import { createPaths } from './modules/paths.js';
+import { createParking } from './modules/parking.js';
 import { createDriveway } from './modules/driveway.js';
 import { createManor } from './modules/manor.js';
 import { createOutbuilding } from './modules/outbuilding.js';
@@ -59,6 +61,8 @@ const fill = new THREE.HemisphereLight(0xddeeff, 0x889988, 0.4);
 scene.add(fill);
 
 createGround(scene);
+createPaths(scene);
+createParking(scene);
 createDriveway(scene);
 createManor(scene);
 createOutbuilding(scene);
