@@ -94,10 +94,17 @@ function createPerson(options) {
   });
   const leftArm = new THREE.Mesh(armGeo, sleeveMat);
   const rightArm = new THREE.Mesh(armGeo, sleeveMat);
-  leftArm.position.set(-1.8 * scale, 5.8 * scale, 0.4 * scale);
-  rightArm.position.set(1.8 * scale, 5.8 * scale, 0.4 * scale);
-  leftArm.rotation.z = Math.PI / 10;
-  rightArm.rotation.z = -Math.PI / 10;
+  if (isBride) {
+    leftArm.position.set(-0.2 * scale, 5.4 * scale, 1.4 * scale);
+    rightArm.position.set(0.6 * scale, 5.4 * scale, 1.2 * scale);
+    leftArm.rotation.x = -Math.PI / 4;
+    rightArm.rotation.x = -Math.PI / 4;
+  } else {
+    leftArm.position.set(-1.2 * scale, 5.6 * scale, 0.4 * scale);
+    rightArm.position.set(1.2 * scale, 5.6 * scale, 0.4 * scale);
+    leftArm.rotation.x = Math.PI / 12;
+    rightArm.rotation.x = -Math.PI / 12;
+  }
   leftArm.castShadow = rightArm.castShadow = true;
   leftArm.receiveShadow = rightArm.receiveShadow = true;
   group.add(leftArm, rightArm);
@@ -106,8 +113,15 @@ function createPerson(options) {
   const handGeo = new THREE.SphereGeometry(0.45 * scale, 10, 10);
   const lHand = new THREE.Mesh(handGeo, skinMat);
   const rHand = new THREE.Mesh(handGeo, skinMat);
-  lHand.position.copy(leftArm.position).add(new THREE.Vector3(0, -2.2 * scale, 0));
-  rHand.position.copy(rightArm.position).add(new THREE.Vector3(0, -2.2 * scale, 0));
+  const armLength = 3.6 * scale;
+  const handOffset = new THREE.Vector3(0, -armLength / 2, 0);
+
+  lHand.position
+    .copy(leftArm.position)
+    .add(handOffset.clone().applyEuler(leftArm.rotation));
+  rHand.position
+    .copy(rightArm.position)
+    .add(handOffset.clone().applyEuler(rightArm.rotation));
   lHand.castShadow = rHand.castShadow = true;
   group.add(lHand, rHand);
 
