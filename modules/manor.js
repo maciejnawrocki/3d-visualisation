@@ -87,13 +87,15 @@ export function createManor(scene) {
   manor.add(gable);
 
   // Central main roof
-  const roof = createRoof(centerWidth - 10, centerDepth + 15, 15, roofMat);
+  const roof = createRoof(centerDepth + 15, centerWidth - 10, 15, roofMat);
+  roof.rotation.y = Math.PI / 2;
   roof.position.set(0, centerHeight + 7, 0);
   manor.add(roof);
 
   // Risalit small roof
-  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 8, roofMat);
-  smallRoof.position.set(0, 30, centerDepth / 2 + 4);
+  const smallRoof = createRoof(risDepth + 6, risWidth + 4, 8, roofMat);
+  smallRoof.rotation.y = Math.PI / 2;
+  smallRoof.position.set(0, 20, centerDepth / 2 + 4);
   manor.add(smallRoof);
 
   // Front colonnade (porch)
@@ -169,7 +171,8 @@ export function createManor(scene) {
     wingBase.receiveShadow = true;
     wing.add(wingBase);
 
-    const wingRoof = createRoof(wingWidth - 20, wingDepth - 20, 12, roofMat);
+    const wingRoof = createRoof(wingDepth - 20, wingWidth - 20, 12, roofMat);
+    wingRoof.rotation.y = Math.PI / 2;
     wingRoof.position.set(0, wingHeight + 5, 0);
     wing.add(wingRoof);
 
