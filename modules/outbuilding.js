@@ -13,8 +13,9 @@ export function createOutbuilding(scene) {
   body.receiveShadow = true;
   group.add(body);
 
-  const roof = createRoof(60 + 4, 28 + 4, 16, darkRoofMat);
-  roof.position.y = 30;
+  const roof = createRoof(28 + 4, 60 + 4, 16, darkRoofMat);
+  roof.rotation.y = Math.PI / 2;
+  roof.position.y = 20;
   group.add(roof);
 
   // Solar panels on roof
