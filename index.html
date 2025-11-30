@@ -272,7 +272,7 @@ createDriveway();
 // Manor & buildings
 function createRoof(width, depth, height, material) {
   const geo = new THREE.ConeGeometry(
-    Math.max(width, depth) * 0.72,
+    Math.max(width, depth) * 0.6,
     height,
     4,
     1
@@ -369,13 +369,13 @@ function createManor() {
   manor.add(gable);
 
   // Central main roof
-  const roof = createRoof(centerWidth + 10, centerDepth + 10, 18, roofMat);
-  roof.position.set(0, centerHeight + 11, 0);
+  const roof = createRoof(centerWidth + 10, centerDepth + 10, 15, roofMat);
+  roof.position.set(0, centerHeight + 7, 0);
   manor.add(roof);
 
   // Risalit small roof
-  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 10, roofMat);
-  smallRoof.position.set(0, 26, centerDepth / 2 + 8);
+  const smallRoof = createRoof(risWidth + 4, risDepth + 6, 8, roofMat);
+  smallRoof.position.set(0, 24, centerDepth / 2 + 8);
   manor.add(smallRoof);
 
   // Front colonnade (porch)
@@ -451,8 +451,8 @@ function createManor() {
     wingBase.receiveShadow = true;
     wing.add(wingBase);
 
-    const wingRoof = createRoof(wingWidth + 4, wingDepth + 6, 14, roofMat);
-    wingRoof.position.set(0, wingHeight + 7, 0);
+    const wingRoof = createRoof(wingWidth + 4, wingDepth + 6, 12, roofMat);
+    wingRoof.position.set(0, wingHeight + 5, 0);
     wing.add(wingRoof);
 
     // Wing windows (front & back)
