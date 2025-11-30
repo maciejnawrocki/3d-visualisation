@@ -22,7 +22,7 @@ export function createOutbuilding(scene) {
   const panelGeo = new THREE.BoxGeometry(14, 0.4, 6);
   for (let i = -1; i <= 1; i++) {
     const panel = new THREE.Mesh(panelGeo, solarMat);
-    panel.rotation.x = -Math.PI / 10;
+    panel.rotation.x = Math.PI / 10;
     panel.position.set(i * 18, 30.6, 10);
     panel.castShadow = true;
     group.add(panel);

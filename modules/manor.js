@@ -60,7 +60,7 @@ export function createManor(scene) {
 
   // Central front risalit (the porch + balcony volume)
   const risWidth = 32;
-  const risDepth = 8;
+  const risDepth = 10;
   const risHeight = 20;
   const risGeo = new THREE.BoxGeometry(risWidth, risHeight, risDepth);
   const ris = new THREE.Mesh(risGeo, façadeMat);
@@ -87,15 +87,15 @@ export function createManor(scene) {
   manor.add(gable);
 
   // Central main roof
-  const roof = createRoof(centerDepth + 15, centerWidth - 10, 15, roofMat);
+  const roof = createRoof(centerDepth + 3, centerWidth + 3, 15, roofMat);
   roof.rotation.y = Math.PI / 2;
-  roof.position.set(0, centerHeight + 7, 0);
+  roof.position.set(0, centerHeight, 0);
   manor.add(roof);
 
   // Risalit small roof
-  const smallRoof = createRoof(risDepth + 6, risWidth + 4, 8, roofMat);
-  smallRoof.rotation.y = Math.PI / 2;
-  smallRoof.position.set(0, 20, centerDepth / 2 + 4);
+  const smallRoof = createRoof(risWidth + 3, risDepth + 20, 16, roofMat);
+  smallRoof.rotation.y = Math.PI ;
+  smallRoof.position.set(0, 20, centerDepth / 2 - 4);
   manor.add(smallRoof);
 
   // Front colonnade (porch)
@@ -153,9 +153,9 @@ export function createManor(scene) {
   function createWing(sign) {
     const wing = new THREE.Group();
 
-    const wingWidth = 60;
+    const wingWidth = 40;
     const wingDepth = 26;
-    const wingHeight = 18;
+    const wingHeight = 20;
 
     const wingGeo = new THREE.BoxGeometry(wingWidth, wingHeight, wingDepth);
     const wingMesh = new THREE.Mesh(wingGeo, façadeMat);
@@ -171,9 +171,9 @@ export function createManor(scene) {
     wingBase.receiveShadow = true;
     wing.add(wingBase);
 
-    const wingRoof = createRoof(wingDepth - 20, wingWidth - 20, 12, roofMat);
+    const wingRoof = createRoof(wingDepth + 3, wingWidth + 3, 12, roofMat);
     wingRoof.rotation.y = Math.PI / 2;
-    wingRoof.position.set(0, wingHeight + 5, 0);
+    wingRoof.position.set(0, wingHeight, 0);
     wing.add(wingRoof);
 
     // Wing windows (front & back)
@@ -196,7 +196,7 @@ export function createManor(scene) {
 
     // Slight inner bend toward courtyard
     wing.rotation.y = sign * (Math.PI / 2)*3;
-    wing.position.set(sign * (centerWidth / 2 + wingWidth / 2 - 28), 0, 50);
+    wing.position.set(sign * (centerWidth / 2 + wingWidth / 2 - 10), 0, 40);
 
     return wing;
   }

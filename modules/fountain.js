@@ -5,7 +5,7 @@ export function createFountain(scene) {
   const fountainMat = new THREE.MeshStandardMaterial({ color: 0xe5e5e5, roughness: 0.6 });
 
   // Base
-  const baseGeo = new THREE.CylinderGeometry(10, 10, 1, 32);
+  const baseGeo = new THREE.CylinderGeometry(14, 14, 1, 32);
   const base = new THREE.Mesh(baseGeo, fountainMat);
   base.position.y = 0.5;
   base.castShadow = true;
@@ -21,7 +21,7 @@ export function createFountain(scene) {
   fountain.add(stem1);
 
   // Lower bowl
-  const bowl1Geo = new THREE.CylinderGeometry(8, 7, 2, 32);
+  const bowl1Geo = new THREE.CylinderGeometry(5, 4, 1, 32);
   const bowl1 = new THREE.Mesh(bowl1Geo, fountainMat);
   bowl1.position.y = 5;
   bowl1.castShadow = true;
@@ -37,7 +37,7 @@ export function createFountain(scene) {
   fountain.add(stem2);
 
   // Upper bowl
-  const bowl2Geo = new THREE.CylinderGeometry(4, 3.5, 1.5, 32);
+  const bowl2Geo = new THREE.CylinderGeometry(3, 2.5, 1, 32);
   const bowl2 = new THREE.Mesh(bowl2Geo, fountainMat);
   bowl2.position.y = 9;
   bowl2.castShadow = true;
