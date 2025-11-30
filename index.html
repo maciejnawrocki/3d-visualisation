@@ -225,52 +225,37 @@ function createGround() {
   scene.add(ground);
 
   // Light border to suggest shoreline transition
-  const shoreGeo = new THREE.RingGeometry(210, 260, 64);
-  const shoreMat = new THREE.MeshStandardMaterial({
-    color: 0x8ca66c,
-    side: THREE.DoubleSide,
-    roughness: 0.9
-  });
-  const shore = new THREE.Mesh(shoreGeo, shoreMat);
-  shore.rotation.x = -Math.PI / 2;
-  shore.position.set(0, 0.05, -80);
-  shore.receiveShadow = true;
-  scene.add(shore);
+  // const shoreGeo = new THREE.RingGeometry(210, 260, 64);
+  // const shoreMat = new THREE.MeshStandardMaterial({
+  //   color: 0x8ca66c,
+  //   side: THREE.DoubleSide,
+  //   roughness: 0.9
+  // });
+  // const shore = new THREE.Mesh(shoreGeo, shoreMat);
+  // shore.rotation.x = -Math.PI / 2;
+  // shore.position.set(0, 0.05, -80);
+  // shore.receiveShadow = true;
+  // scene.add(shore);
 
 }
 createGround();
 
 function createDriveway() {
-  const zOffset = 85;
-  const shape = new THREE.Shape();
-  shape.moveTo(-150, 120 + zOffset);
-  shape.quadraticCurveTo(-100, 80 + zOffset, -50, 60 + zOffset);
-  shape.quadraticCurveTo(0, 50 + zOffset, 50, 60 + zOffset);
-  shape.quadraticCurveTo(100, 80 + zOffset, 150, 120 + zOffset);
-  shape.lineTo(150, 100 + zOffset);
-  shape.quadraticCurveTo(100, 60 + zOffset, 50, 40 + zOffset);
-  shape.quadraticCurveTo(0, 30 + zOffset, -50, 40 + zOffset);
-  shape.quadraticCurveTo(-100, 60 + zOffset, -150, 100 + zOffset);
-  shape.lineTo(-150, 120 + zOffset);
+    // Circular path around fountain
+    const circleGeo = new THREE.RingGeometry(18, 28, 64);
+    const circle = new THREE.Mesh(circleGeo, pathMat);
+    circle.rotation.x = -Math.PI / 2;
+    circle.position.y = 0.1;
+    circle.receiveShadow = true;
+    scene.add(circle);
 
-  const extrudeSettings = { depth: 0.4, bevelEnabled: false };
-  const drivewayGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  const driveway = new THREE.Mesh(drivewayGeo, pathMat);
-  driveway.rotation.x = -Math.PI / 2;
-  driveway.position.y = 0.1;
-  driveway.receiveShadow = true;
-  scene.add(driveway);
-
-  const centerIsland = new THREE.Shape();
-  centerIsland.moveTo(-40, 50 + zOffset);
-  centerIsland.quadraticCurveTo(0, 40 + zOffset, 40, 50 + zOffset);
-  centerIsland.quadraticCurveTo(0, 60 + zOffset, -40, 50 + zOffset);
-  const islandGeo = new THREE.ShapeGeometry(centerIsland);
-  const island = new THREE.Mesh(islandGeo, grassMat);
-  island.rotation.x = -Math.PI / 2;
-  island.position.y = 0.2;
-  island.receiveShadow = true;
-  scene.add(island);
+    // Straight path to manor
+    const pathGeo = new THREE.BoxGeometry(10, 0.4, 30);
+    const path = new THREE.Mesh(pathGeo, pathMat);
+    path.position.set(-1.4, 0.1, 15);
+    path.rotation.fromEuler(new THREE.Euler(0, -0.32, 0));
+    path.receiveShadow = true;
+    scene.add(path);
 }
 createDriveway();
 
@@ -318,7 +303,7 @@ function createFountain() {
   bowl2.receiveShadow = true;
   fountain.add(bowl2);
 
-  fountain.position.set(0, 0, 100);
+  fountain.position.set(0, 0, 0);
 
   scene.add(fountain);
 }
@@ -326,18 +311,55 @@ createFountain();
 
 // Manor & buildings
 function createRoof(width, depth, height, material) {
-  const geo = new THREE.ConeGeometry(
-    1,
-    height,
-    4,
-    1
-  );
-  const mesh = new THREE.Mesh(geo, material);
-  mesh.rotation.y = Math.PI / 4;
-  mesh.scale.set(width / Math.sqrt(2), 1, depth / Math.sqrt(2));
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
+    const geo = new THREE.BufferGeometry();
+
+    const w2 = width / 2;
+    const d2 = depth / 2;
+
+    let vertices, indices;
+
+    if (width >= depth) {
+        const ridge_w = (width - depth) / 2;
+        vertices = new Float32Array([
+            -w2, 0,  d2, // 0: front-left
+             w2, 0,  d2, // 1: front-right
+             w2, 0, -d2, // 2: back-right
+            -w2, 0, -d2, // 3: back-left
+            -ridge_w, height, 0, // 4: ridge-left
+             ridge_w, height, 0  // 5: ridge-right
+        ]);
+        indices = [
+            0, 1, 5,  0, 5, 4, // front face
+            2, 3, 4,  2, 4, 5, // back face
+            1, 2, 5,           // right end face
+            3, 0, 4            // left end face
+        ];
+    } else { // depth > width
+        const ridge_d = (depth - width) / 2;
+        vertices = new Float32Array([
+            -w2, 0,  d2, // 0: front-left
+             w2, 0,  d2, // 1: front-right
+             w2, 0, -d2, // 2: back-right
+            -w2, 0, -d2, // 3: back-left
+            0, height, -ridge_d, // 4: ridge-back
+            0, height,  ridge_d  // 5: ridge-front
+        ]);
+        indices = [
+            0, 1, 5,           // front end face
+            2, 3, 4,           // back end face
+            1, 2, 4,  1, 4, 5, // right face
+            3, 0, 5,  3, 5, 4  // left face
+        ];
+    }
+
+    geo.setIndex(indices);
+    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geo.computeVertexNormals();
+
+    const mesh = new THREE.Mesh(geo, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
 }
 
 function addWindowsToFacade(group, width, height, rows, cols, zOffset) {
@@ -374,7 +396,8 @@ function addWindowsToFacade(group, width, height, rows, cols, zOffset) {
 
 function createManor() {
   const manor = new THREE.Group();
-  manor.position.set(0, 0, 40);
+  manor.position.set(-32.9, 0, 12.7);
+  manor.rotation.y = -1.9 * (Math.PI / 180);
 
   // Central block (two stories)
   const centerWidth = 80;
@@ -572,7 +595,8 @@ createManor();
 // Outbuilding with solar panels & parking
 function createOutbuilding() {
   const group = new THREE.Group();
-  group.position.set(-120, 0, 80);
+  group.position.set(-42.5, 0, -7.4);
+  group.rotation.y = -39.4 * (Math.PI / 180);
 
   const bodyGeo = new THREE.BoxGeometry(60, 20, 28);
   const body = new THREE.Mesh(bodyGeo, façadeMat);
@@ -605,31 +629,74 @@ function createOutbuilding() {
     group.add(frame);
   }
 
-  // Parking area
-  const parkGeo = new THREE.BoxGeometry(120, 0.4, 40);
-  const park = new THREE.Mesh(parkGeo, pathMat);
-  park.position.set(20, 0.4, 70);
-  park.receiveShadow = true;
-  group.add(park);
-
-  // Simple parked cars as small boxes
-  const carGeo = new THREE.BoxGeometry(7, 3, 4);
-  const colors = [0x444bff, 0xf44336, 0x9e9e9e, 0x4caf50, 0x000000];
-  for (let i = 0; i < 7; i++) {
-    const mat = new THREE.MeshStandardMaterial({
-      color: colors[i % colors.length],
-      roughness: 0.5,
-      metalness: 0.3
-    });
-    const car = new THREE.Mesh(carGeo, mat);
-    car.position.set(-30 + i * 14, 1.8, 80 + (i % 2 === 0 ? -5 : 5));
-    car.castShadow = true;
-    car.receiveShadow = true;
-    group.add(car);
-  }
-
   scene.add(group);
 }
+createOutbuilding();
+
+function createParkingArea() {
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // Parking area
+    const parkGeo = new THREE.BoxGeometry(100, 0.4, 80);
+    const park = new THREE.Mesh(parkGeo, pathMat);
+    park.position.set(70, 0.2, -140);
+    park.receiveShadow = true;
+    group.add(park);
+
+    // Simple parked cars as small boxes
+    const carGeo = new THREE.BoxGeometry(7, 3, 4);
+    const colors = [0x444bff, 0xf44336, 0x9e9e9e, 0x4caf50, 0x000000, 0xffffff, 0xfbc02d];
+    let carCount = 0;
+    for (let row = 0; row < 2; row++) {
+        for (let i = 0; i < 6; i++) {
+            const mat = new THREE.MeshStandardMaterial({
+                color: colors[carCount % colors.length],
+                roughness: 0.5,
+                metalness: 0.3
+            });
+            const car = new THREE.Mesh(carGeo, mat);
+            car.position.set(30 + i * 12, 1.8, -150 + row * 20);
+            car.rotation.y = Math.PI / 2 + (Math.random() - 0.5) * 0.2;
+            car.castShadow = true;
+            car.receiveShadow = true;
+            group.add(car);
+            carCount++;
+        }
+    }
+
+    // EV Chargers
+    const chargerGeo = new THREE.BoxGeometry(1, 4, 1);
+    const chargerMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.7 });
+    for (let i = 0; i < 3; i++) {
+        const charger = new THREE.Mesh(chargerGeo, chargerMat);
+        charger.position.set(110 + i * 5, 2, -170);
+        charger.castShadow = true;
+        group.add(charger);
+    }
+}
+createParkingArea();
+
+function createParkingKiosk() {
+    const group = new THREE.Group();
+    group.position.set(70.1, 0, -161.0);
+    group.rotation.y = 5 * (Math.PI / 180);
+
+    const width = 8, depth = 8, height = 6;
+    const bodyGeo = new THREE.BoxGeometry(width, height, depth);
+    const body = new THREE.Mesh(bodyGeo, façadeMat);
+    body.position.y = height / 2;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    group.add(body);
+
+    const roof = createRoof(width + 1, depth + 1, 4, roofMat);
+    roof.position.y = height + 1.5;
+    group.add(roof);
+
+    scene.add(group);
+}
+createParkingKiosk();
 
 // Trees, hedges, and lamp posts
 function createRealisticTree(x, z, options = {}) {
@@ -739,7 +806,7 @@ function populateLandscape() {
   createTopiary(-60, 80);
   createTopiary(110, 50);
 }
-populateLandscape();
+// populateLandscape();
 
 // Bride and groom
 function createPerson(options) {
@@ -916,9 +983,9 @@ function placeCouple() {
     isBride: true
   });
 
-  // Position them on the axis of the entrance, slightly in front of the fountain
-  groom.position.set(7, 0, 126);
-  bride.position.set(-7, 0, 126);
+  // Position them in front of the manor, on the path to the fountain
+  groom.position.set(-10, 0, 13.5);
+  bride.position.set(-12, 0, 13.5);
 
   groom.rotation.y = Math.PI * 0.05;
   bride.rotation.y = -Math.PI * 0.05;
