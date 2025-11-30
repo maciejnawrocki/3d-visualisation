@@ -28,8 +28,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2000
 );
-// camera.position.set(0, 10, 100); // camera in front of couple
-camera.position.set(0, 600, 0); // camera from the top
+ camera.position.set(0, 10, 100); // camera in front of couple
+//camera.position.set(0, 600, 0); // camera from the top
 
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);

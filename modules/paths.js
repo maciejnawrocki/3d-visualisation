@@ -7,8 +7,8 @@ export function createPaths(scene) {
   // Path from manor entrance to the fountain
   const mainPathShape = new THREE.Shape();
   mainPathShape.moveTo(-10, 40); // Corresponds to world z = -40
-  mainPathShape.lineTo(-10, 15);  // Corresponds to world z = -15 (just before fountain)
-  mainPathShape.lineTo(10, 15);
+  mainPathShape.lineTo(-10, 10);  // Corresponds to world z = -15 (just before fountain)
+  mainPathShape.lineTo(10, 10);
   mainPathShape.lineTo(10, 40);
   mainPathShape.closePath();
 

@@ -19,6 +19,7 @@ export function createDriveway(scene) {
   const driveway = new THREE.Mesh(drivewayGeo, pathMat);
   driveway.rotation.x = -Math.PI / 2;
   driveway.position.y = 0.1;
+  driveway.position.z = 220;
   driveway.receiveShadow = true;
   scene.add(driveway);
 
