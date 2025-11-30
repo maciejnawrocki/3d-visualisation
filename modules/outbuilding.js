@@ -38,28 +38,5 @@ export function createOutbuilding(scene) {
     group.add(frame);
   }
 
-  // Parking area
-  const parkGeo = new THREE.BoxGeometry(120, 0.4, 40);
-  const park = new THREE.Mesh(parkGeo, pathMat);
-  park.position.set(20, 0.4, 70);
-  park.receiveShadow = true;
-  group.add(park);
-
-  // Simple parked cars as small boxes
-  const carGeo = new THREE.BoxGeometry(7, 3, 4);
-  const colors = [0x444bff, 0xf44336, 0x9e9e9e, 0x4caf50, 0x000000];
-  for (let i = 0; i < 7; i++) {
-    const mat = new THREE.MeshStandardMaterial({
-      color: colors[i % colors.length],
-      roughness: 0.5,
-      metalness: 0.3
-    });
-    const car = new THREE.Mesh(carGeo, mat);
-    car.position.set(-30 + i * 14, 1.8, 80 + (i % 2 === 0 ? -5 : 5));
-    car.castShadow = true;
-    car.receiveShadow = true;
-    group.add(car);
-  }
-
   scene.add(group);
 }
