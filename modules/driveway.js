@@ -3,15 +3,16 @@ import { pathMat, grassMat } from './materials.js';
 
 export function createDriveway(scene) {
   const shape = new THREE.Shape();
-  shape.moveTo(-150, 120);
-  shape.quadraticCurveTo(-100, 80, -50, 60);
-  shape.quadraticCurveTo(0, 50, 50, 60);
-  shape.quadraticCurveTo(100, 80, 150, 120);
-  shape.lineTo(150, 100);
-  shape.quadraticCurveTo(100, 60, 50, 40);
-  shape.quadraticCurveTo(0, 30, -50, 40);
-  shape.quadraticCurveTo(-100, 60, -150, 100);
-  shape.lineTo(-150, 120);
+  // Wider, more sweeping curves for the driveway
+  shape.moveTo(-180, 150);
+  shape.quadraticCurveTo(-120, 90, -60, 70);
+  shape.quadraticCurveTo(0, 60, 60, 70);
+  shape.quadraticCurveTo(120, 90, 180, 150);
+  shape.lineTo(180, 130);
+  shape.quadraticCurveTo(120, 70, 60, 50);
+  shape.quadraticCurveTo(0, 40, -60, 50);
+  shape.quadraticCurveTo(-120, 70, -180, 130);
+  shape.closePath();
 
   const extrudeSettings = { depth: 0.4, bevelEnabled: false };
   const drivewayGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
@@ -21,14 +22,5 @@ export function createDriveway(scene) {
   driveway.receiveShadow = true;
   scene.add(driveway);
 
-  const centerIsland = new THREE.Shape();
-  centerIsland.moveTo(-40, 50);
-  centerIsland.quadraticCurveTo(0, 40, 40, 50);
-  centerIsland.quadraticCurveTo(0, 60, -40, 50);
-  const islandGeo = new THREE.ShapeGeometry(centerIsland);
-  const island = new THREE.Mesh(islandGeo, grassMat);
-  island.rotation.x = -Math.PI / 2;
-  island.position.y = 0.2;
-  island.receiveShadow = true;
-  scene.add(island);
+  // The satellite image shows a continuous loop, so the center island is removed.
 }
