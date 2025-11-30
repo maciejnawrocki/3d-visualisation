@@ -94,10 +94,17 @@ function createPerson(options) {
   });
   const leftArm = new THREE.Mesh(armGeo, sleeveMat);
   const rightArm = new THREE.Mesh(armGeo, sleeveMat);
-  leftArm.position.set(-1.8 * scale, 5.8 * scale, 0.4 * scale);
-  rightArm.position.set(1.8 * scale, 5.8 * scale, 0.4 * scale);
-  leftArm.rotation.z = Math.PI / 10;
-  rightArm.rotation.z = -Math.PI / 10;
+  if (isBride) {
+    leftArm.position.set(-0.6 * scale, 5.4 * scale, 1.2 * scale);
+    rightArm.position.set(0.6 * scale, 5.4 * scale, 1.2 * scale);
+    leftArm.rotation.x = -Math.PI / 4;
+    rightArm.rotation.x = -Math.PI / 4;
+  } else {
+    leftArm.position.set(-1.2 * scale, 6.2 * scale, 0);
+    rightArm.position.set(1.2 * scale, 6.2 * scale, 0);
+    leftArm.rotation.z = Math.PI / 12;
+    rightArm.rotation.z = -Math.PI / 12;
+  }
   leftArm.castShadow = rightArm.castShadow = true;
   leftArm.receiveShadow = rightArm.receiveShadow = true;
   group.add(leftArm, rightArm);
