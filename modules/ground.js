@@ -3,7 +3,7 @@ import { grassMat } from './materials.js';
 
 export function createGround(scene) {
   // Main grass island plateau
-  const groundGeo = new THREE.PlaneGeometry(600, 400);
+  const groundGeo = new THREE.PlaneGeometry(1400, 1200);
   const ground = new THREE.Mesh(groundGeo, grassMat);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
